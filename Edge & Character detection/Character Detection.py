@@ -1,24 +1,12 @@
 """
 Character Detection
 
-The goal of this task is to experiment with template matching techniques. Specifically, the task is to find ALL of
-the coordinates where a specific character appears using template matching.
+The goal is to find all of the coordinates where a specific character appears using template matching.
 
 There are 3 sub tasks:
 1. Detect character 'a'.
 2. Detect character 'b'.
 3. Detect character 'c'.
-
-You need to customize your own templates. The templates containing character 'a', 'b' and 'c' should be named as
-'a.jpg', 'b.jpg', 'c.jpg' and stored in './data/' folder.
-
-Please complete all the functions that are labelled with '# TODO'. Whem implementing the functions,
-comment the lines 'raise NotImplementedError' instead of deleting them. The functions defined in utils.py
-and the functions you implement in task1.py are of great help.
-
-Do NOT modify the code provided.
-Do NOT use any API provided by opencv (cv2) and numpy (np) in your code.
-Do NOT import any library (function, module, etc.).
 """
 
 import argparse
@@ -26,27 +14,30 @@ import json
 import os
 
 import utils
-from task1 import *  # you could modify this line
-
+from task1 import *
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="cse 473/573 project 1.")
-    parser.add_argument(
-        "--img_path", type=str, default="./data/characters.jpg",
-        help="path to the image used for character detection (do not change this arg)")
-    parser.add_argument(
-        "--template_path", type=str, default="",
+    parser = argparse.ArgumentParser(description="edge-character detection")
+    parser.add_argument( "--img_path", 
+        type=str, 
+        default="./data/characters.jpg",
+        help="path to the image used for character detection")
+    parser.add_argument( "--template_path", 
+        type=str, 
+        default="",
         choices=["./data/a.jpg", "./data/b.jpg", "./data/c.jpg"],
         help="path to the template image")
-    parser.add_argument(
-        "--result_saving_directory", dest="rs_directory", type=str, default="./results/",
-        help="directory to which results are saved (do not change this arg)")
+    parser.add_argument( "--result_saving_directory",
+        dest="rs_directory",
+        type=str,
+        default="./results/",
+        help="directory to which results are saved")
     args = parser.parse_args()
     return args
 
-
 def detect(img, template):
-    """Detect a given character, i.e., the character in the template image.
+    """
+    Detect a given character, i.e., the character in the template image.
 
     Args:
         img: nested list (int), image that contains character to be detected.
@@ -58,7 +49,6 @@ def detect(img, template):
             x: row that the character appears (starts from 0).
             y: column that the character appears (starts from 0).
     """
-    # TODO: implement this function.
 
     template_h = len(template)
     template_w = max([len(i) for i in template])
@@ -75,10 +65,8 @@ def detect(img, template):
             cropped_img = img[i: i + template_h]
             cropped_img = [x[j: j+template_w] for x in cropped_img]
 
-            ''' Equation 8.12 - Mean image of the template '''
             i_0_bar = sum([sum(x) for x in template])/(template_h * template_w)
 
-            ''' Equation 8.13 - Mean image of the cropped image'''
             i_1_bar = sum([sum(y) for y in cropped_img])/(template_h * template_w)
 
             template_sigma = (sum([sum(v) for v in [[(w-i_0_bar)**2 for w in x] for x in template]])) ** 0.5
@@ -103,10 +91,8 @@ def detect(img, template):
                 coordinates_temp.append(x)
                 coordinates_temp.append(y)
                 coordinates.append(coordinates_temp)
-
-    # raise NotImplementedError
+    
     return coordinates
-
 
 def save_results(coordinates, template, template_name, rs_directory):
     results = {}
@@ -114,7 +100,6 @@ def save_results(coordinates, template, template_name, rs_directory):
     results["template_size"] = (len(template), len(template[0]))
     with open(os.path.join(rs_directory, template_name), "w") as file:
         json.dump(results, file)
-
 
 def main():
     args = parse_args()
@@ -126,7 +111,6 @@ def main():
 
     template_name = "{}.json".format(os.path.splitext(os.path.split(args.template_path)[1])[0])
     save_results(coordinates, template, template_name, args.rs_directory)
-
 
 if __name__ == "__main__":
     main()
