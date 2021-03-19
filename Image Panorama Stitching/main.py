@@ -1,6 +1,8 @@
 '''
-Importing required libraries
+Author: @sivashanmugamo
 '''
+
+# Importing required libraries
 import os
 
 import sys
